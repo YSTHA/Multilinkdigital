@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multilink Digital Studio Billing</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+  <h1>Multilink Digital Studio - Billing System</h1>
+
+  <!-- Customer Info -->
+  <div class="section">
+    <label>Customer Name</label>
+    <input id="customer" placeholder="Enter customer name">
+  </div>
+
+  <!-- Add Item -->
+  <div class="section form-row">
+    <input id="photoNumber" placeholder="Photo Number">
+    <input id="product" placeholder="Service/Product">
+    <input id="price" type="number" placeholder="Price">
+    <button onclick="addItem()">➕ Add</button>
+  </div>
+
+  <p id="message" class="message"></p>
+
+  <!-- Action Buttons -->
+  <div class="section buttons">
+    <button onclick="generateBill()">🧾 Generate Bill</button>
+    <button onclick="window.print()">🖨️ Print / Save PDF</button>
+    <button onclick="shareBill()">📤 Share</button>
+    <button onclick="newInvoice()">🆕 New Invoice</button>
+    <button id="toggleDashboardBtn">📂 View All Invoices</button>
+   
+
+  </div>
+
+  <!-- Search -->
+  <div class="section">
+    <h3>Search Previous Bill</h3>
+    <input id="searchInvoice" placeholder="Enter Invoice Number">
+    <button onclick="searchBill()">🔍 Search</button>
+  </div>
+
+  <!-- Bill Display -->
+  <div class="bill" id="billArea">
+    <div class="bill-header">
+     
+      <h2>Multilink Digital Studio</h2>
+      <p>Thaiba, Godavari-14</p>
+      <p>Phone: 9841452730 </p>
+    </div>
+
+    <h3>Service Invoice</h3>
+    <p id="invoiceNumber"></p>
+    <p id="billDate"></p>
+    <p id="billCustomer"></p>
+
+    <table id="billTable">
+      <tr>
+        <th>Photo Number</th>
+        <th>Service</th>
+        <th>Price</th>
+        <th>Action</th>
+      </tr>
+    </table>
+
+    <p class="total" id="total"></p>
+  </div>
+
+  <!-- Dashboard for old invoices -->
+  <div id="invoiceDashboard" class="dashboard"></div>
+ 
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
