@@ -1,184 +1,342 @@
-let invoiceCounter = localStorage.getItem("invoiceCounter") || 1001
 let items = []
-let total = 0
-let viewMode = false
 
-const dashboard = document.getElementById("invoiceDashboard")
-const toggleBtn = document.getElementById("toggleDashboardBtn")
-let dashboardVisible = false
+let invoiceNumber = parseInt(localStorage.getItem("invoiceNumber")) || 1001
+document.getElementById("invoiceNumber").value = invoiceNumber
 
-toggleBtn.addEventListener("click", ()=>{
-  if(dashboardVisible){
-    dashboard.style.maxHeight = "0"
-    dashboardVisible = false
-  } else {
-    showAllBills()
-    dashboard.style.maxHeight = dashboard.scrollHeight + "px"
-    dashboardVisible = true
-  }
+let today = new Date()
+
+let formattedDate =
+("0" + today.getDate()).slice(-2) + "/" +
+("0" + (today.getMonth() + 1)).slice(-2) + "/" +
+today.getFullYear()
+
+document.getElementById("billDate").value = formattedDate
+function loadServices(){
+
+let services = JSON.parse(localStorage.getItem("services")) || []
+
+let list = document.getElementById("services")
+
+list.innerHTML = ""
+
+services.forEach(s => {
+
+let option = document.createElement("option")
+option.value = s.name
+
+list.appendChild(option)
+
 })
 
-// Add item
+}
+
+
+
+particular.addEventListener("change", () => {
+
+let services = JSON.parse(localStorage.getItem("services")) || []
+
+let name = particular.value
+
+let found = services.find(s => s.name === name)
+
+if(found){
+rate.value = found.rate
+}
+
+})
+
+function saveService(name,rate){
+
+let services = JSON.parse(localStorage.getItem("services")) || []
+
+if(!services.find(s => s.name === name)){
+services.push({name,rate})
+}
+
+localStorage.setItem("services", JSON.stringify(services))
+
+}
+
 function addItem(){
-  if(viewMode){ alert("Saved invoices cannot be edited"); return }
 
-  let photoNumber = document.getElementById("photoNumber").value
-  let product = document.getElementById("product").value
-  let price = parseFloat(document.getElementById("price").value)
+let name = particular.value
+let q = parseFloat(qty.value)
+let r = parseFloat(rate.value)
 
-  if(!photoNumber || !product || !price){ alert("Please fill all fields"); return }
-
-  items.push({photoNumber, product, price})
-  document.getElementById("photoNumber").value=""
-  document.getElementById("product").value=""
-  document.getElementById("price").value=""
-
-  document.getElementById("message").innerText="Item added successfully!"
-  setTimeout(()=>{document.getElementById("message").innerText=""},2000)
-  generateBill(false)
+if(!name || !q || !r){
+alert("Fill all fields")
+return
 }
 
-// Generate bill
-function generateBill(save=true){
-  let table = document.getElementById("billTable")
-  table.innerHTML = `
-    <tr>
-      <th>Photo Number</th>
-      <th>Service</th>
-      <th>Price</th>
-      <th>Action</th>
-    </tr>
-  `
+saveService(name,r)
 
-  total = 0
-  items.forEach((item,index)=>{
-    let row = table.insertRow()
-    row.insertCell(0).innerText = item.photoNumber
-    row.insertCell(1).innerText = item.product
-    row.insertCell(2).innerText = "$"+item.price.toFixed(2)
+items.push({name,q,r})
 
-    let removeBtn = document.createElement("button")
-    removeBtn.innerText = "Remove"
-    if(!viewMode){
-      removeBtn.onclick = ()=>{ items.splice(index,1); generateBill(false) }
-    } else { removeBtn.disabled = true }
+particular.value=""
+qty.value=""
+rate.value=""
 
-    row.insertCell(3).appendChild(removeBtn)
-    total += item.price
-  })
+renderTable()
 
-  let name = document.getElementById("customer").value
-  let today = new Date().toLocaleDateString()
-
-  document.getElementById("invoiceNumber").innerText="Invoice #: "+invoiceCounter
-  document.getElementById("billDate").innerText="Date: "+today
-  document.getElementById("billCustomer").innerText="Customer: "+name
-  document.getElementById("total").innerText="Total: $"+total.toFixed(2)
-
-  if(save && !viewMode){
-    saveBill(name,today)
-    invoiceCounter++
-    localStorage.setItem("invoiceCounter",invoiceCounter)
-    items=[]
-  }
 }
 
-// Save bill
-function saveBill(name,today){
-  let savedBills = JSON.parse(localStorage.getItem("bills")) || []
-  savedBills.push({invoice: invoiceCounter, customer: name, date: today, items, total})
-  localStorage.setItem("bills", JSON.stringify(savedBills))
+function renderTable(){
+
+let table = document.getElementById("billTable")
+
+table.innerHTML = `
+<tr>
+<th>S.N</th>
+<th>Particular</th>
+<th>Qty</th>
+<th>Rate</th>
+<th>Amount</th>
+<th>Action</th>
+</tr>
+`
+
+let total = 0
+
+items.forEach((item,i)=>{
+
+let amount = item.q * item.r
+
+let row = table.insertRow()
+
+row.insertCell(0).innerText = i+1
+row.insertCell(1).innerText = item.name
+row.insertCell(2).innerText = item.q
+row.insertCell(3).innerText = item.r
+row.insertCell(4).innerText = amount
+
+let btn = document.createElement("button")
+btn.innerText = "Remove"
+
+btn.onclick = ()=>{
+items.splice(i,1)
+renderTable()
 }
 
-// Share
+row.insertCell(5).appendChild(btn)
+
+total += amount
+
+})
+
+calculateTotals(total)
+
+}
+
+function calculateTotals(total){
+
+let disc = parseFloat(discount.value) || 0
+let adv = parseFloat(advance.value) || 0
+
+let finalTotal = total - disc
+let balance = finalTotal - adv
+
+document.getElementById("total").innerText = finalTotal
+document.getElementById("balance").innerText = balance
+
+}
+
+function generateBill(){
+
+let customer = customerInput.value
+
+if(items.length === 0){
+alert("No items added")
+return
+}
+
+let bills = JSON.parse(localStorage.getItem("bills")) || []
+
+let bill = {
+invoice: invoiceNumber,
+date: billDate.value,
+customer,
+items,
+discount: parseFloat(discount.value) || 0,
+advance: parseFloat(advance.value) || 0
+}
+
+bills.push(bill)
+
+localStorage.setItem("bills", JSON.stringify(bills))
+
+displayInvoice(bill)
+
+invoiceNumber++
+
+localStorage.setItem("invoiceNumber", invoiceNumber)
+
+document.getElementById("invoiceNumber").value = invoiceNumber
+
+}
+
+function displayInvoice(bill){
+
+let html = `
+
+<div class="shopHeader">
+
+<h2>Multilink Digital Photo & Print</h2>
+
+<p>Thaiba, Godavari-14</p>
+<p>Contact: 9841452730 , 5560697</p>
+
+</div>
+
+<p><b>Invoice:</b> ${bill.invoice}</p>
+<p><b>Date:</b> ${bill.date}</p>
+<p><b>Customer:</b> ${bill.customer}</p>
+
+<table>
+
+<tr>
+<th>S.N</th>
+<th>Particular</th>
+<th>Qty</th>
+<th>Rate</th>
+<th>Amount</th>
+</tr>
+`
+
+let total = 0
+
+bill.items.forEach((item,i)=>{
+
+let amount = item.q * item.r
+
+html += `
+<tr>
+<td>${i+1}</td>
+<td>${item.name}</td>
+<td>${item.q}</td>
+<td>${item.r}</td>
+<td>${amount}</td>
+</tr>
+`
+
+total += amount
+
+})
+
+let finalTotal = total - bill.discount
+let balance = finalTotal - bill.advance
+
+html += `
+
+</table>
+
+<p>Subtotal Rs ${total}</p>
+<p>Discount Rs ${bill.discount}</p>
+<p class="totalBox">Total Rs ${finalTotal}</p>
+<p>Advance Rs ${bill.advance}</p>
+<p class="balanceBox">Balance Rs ${balance}</p>
+
+`
+
+billDisplay.innerHTML = html
+
+}
+
+function searchInvoice(){
+
+let num = searchInput.value
+
+let bills = JSON.parse(localStorage.getItem("bills")) || []
+
+let bill = bills.find(b => b.invoice == num)
+
+if(!bill){
+alert("Invoice not found")
+return
+}
+
+displayInvoice(bill)
+
+}
+
+function viewAllInvoices(){
+
+let bills = JSON.parse(localStorage.getItem("bills")) || []
+
+let html = "<table><tr><th>Invoice</th><th>Customer</th><th>Delete</th></tr>"
+
+bills.forEach((b,i)=>{
+
+html += `
+<tr>
+<td>${b.invoice}</td>
+<td>${b.customer}</td>
+<td><button onclick="deleteInvoice(${i})">Delete</button></td>
+</tr>
+`
+
+})
+
+html += "</table>"
+
+invoiceList.innerHTML = html
+
+}
+
+function deleteInvoice(index){
+
+let bills = JSON.parse(localStorage.getItem("bills")) || []
+
+if(confirm("Delete this invoice?")){
+
+bills.splice(index,1)
+
+localStorage.setItem("bills", JSON.stringify(bills))
+
+viewAllInvoices()
+
+}
+
+}
+
 function shareBill(){
-  let name = document.getElementById("customer").value
-  let totalText = document.getElementById("total").innerText
-  let invoice = document.getElementById("invoiceNumber").innerText
-  let message = `Multilink Digital Studio\n\n${invoice}\nCustomer: ${name}\n${totalText}`
 
-  if(navigator.share){
-    navigator.share({title:"Invoice", text: message})
-  } else {
-    window.open("https://wa.me/?text="+encodeURIComponent(message))
-  }
+let option = prompt(
+"Choose share option:\n1 = WhatsApp\n2 = Copy Text"
+)
+
+let text = billDisplay.innerText
+
+if(option=="1"){
+
+let url = "https://wa.me/?text=" + encodeURIComponent(text)
+
+window.open(url)
+
 }
 
-// Search
-function searchBill(){
-  let invoiceSearch = document.getElementById("searchInvoice").value
-  let bills = JSON.parse(localStorage.getItem("bills")) || []
-  let bill = bills.find(b => b.invoice == invoiceSearch)
-  if(!bill){ alert("Bill not found"); return }
+if(option=="2"){
 
-  items = bill.items
-  invoiceCounter = bill.invoice
-  viewMode = true
-  document.getElementById("customer").value = bill.customer
-  generateBill(false)
+navigator.clipboard.writeText(text)
+
+alert("Invoice copied")
+
 }
 
-// New invoice
-function newInvoice(){
-  items=[]
-  total=0
-  viewMode=false
-  document.getElementById("customer").value=""
-  document.getElementById("photoNumber").value=""
-  document.getElementById("product").value=""
-  document.getElementById("price").value=""
-  document.getElementById("billTable").innerHTML=`
-    <tr>
-      <th>Photo Number</th>
-      <th>Service</th>
-      <th>Price</th>
-      <th>Action</th>
-    </tr>`
-  document.getElementById("invoiceNumber").innerText=""
-  document.getElementById("billDate").innerText=""
-  document.getElementById("billCustomer").innerText=""
-  document.getElementById("total").innerText=""
 }
 
-// Show all invoices
-function showAllBills(){
-  let bills = JSON.parse(localStorage.getItem("bills")) || []
-  dashboard.innerHTML=`<h3>All Invoices</h3><table>
-    <tr><th>Invoice</th><th>Customer</th><th>Date</th><th>Total</th><th>Action</th></tr>
-  </table>`
-  let table = dashboard.querySelector("table")
 
-  bills.forEach((bill,index)=>{
-    let row = table.insertRow()
-    row.insertCell(0).innerText = bill.invoice
-    row.insertCell(1).innerText = bill.customer
-    row.insertCell(2).innerText = bill.date
-    row.insertCell(3).innerText = "$"+bill.total.toFixed(2)
+function newBill(){
 
-    let actionCell = row.insertCell(4)
+items = []
 
-    let viewBtn = document.createElement("button")
-    viewBtn.innerText = "View"
-    viewBtn.onclick = ()=>{
-      items=bill.items
-      invoiceCounter=bill.invoice
-      viewMode=true
-      document.getElementById("customer").value=bill.customer
-      generateBill(false)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
+renderTable()
 
-    let deleteBtn = document.createElement("button")
-    deleteBtn.innerText="Delete"
-    deleteBtn.onclick = ()=>{
-      if(confirm("Delete this invoice?")){
-        bills.splice(index,1)
-        localStorage.setItem("bills",JSON.stringify(bills))
-        showAllBills()
-      }
-    }
+customerInput.value = ""
+discount.value = 0
+advance.value = 0
 
-    actionCell.appendChild(viewBtn)
-    actionCell.appendChild(deleteBtn)
-  })
+billDisplay.innerHTML = ""
+
 }
+
