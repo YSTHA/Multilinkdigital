@@ -1,83 +1,126 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Multilink Digital Studio Billing</title>
+<title>Multilink Billing System</title>
+
 <link rel="stylesheet" href="style.css">
+
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
+
 <body>
 
 <div class="container">
 
-  <h1>Multilink Digital Studio - Billing System</h1>
+<h1>Multilink Billing System</h1>
+<h4>Thaiba, Godavari-14</h4>
+<h4>Contact: 9841452730 , 5560697</h4>
 
-  <!-- Customer Info -->
-  <div class="section">
-    <label>Customer Name</label>
-    <input id="customer" placeholder="Enter customer name">
-  </div>
+<div class="top">
 
-  <!-- Add Item -->
-  <div class="section form-row">
-    <input id="photoNumber" placeholder="Photo Number">
-    <input id="product" placeholder="Service/Product">
-    <input id="price" type="number" placeholder="Price">
-    <button onclick="addItem()">➕ Add</button>
-  </div>
+<label>Customer</label>
+<input id="customerInput">
 
-  <p id="message" class="message"></p>
+<label>Invoice</label>
+<input id="invoiceNumber" disabled>
 
-  <!-- Action Buttons -->
-  <div class="section buttons">
-    <button onclick="generateBill()">🧾 Generate Bill</button>
-    <button onclick="window.print()">🖨️ Print / Save PDF</button>
-    <button onclick="shareBill()">📤 Share</button>
-    <button onclick="newInvoice()">🆕 New Invoice</button>
-    <button id="toggleDashboardBtn">📂 View All Invoices</button>
-   
-
-  </div>
-
-  <!-- Search -->
-  <div class="section">
-    <h3>Search Previous Bill</h3>
-    <input id="searchInvoice" placeholder="Enter Invoice Number">
-    <button onclick="searchBill()">🔍 Search</button>
-  </div>
-
-  <!-- Bill Display -->
-  <div class="bill" id="billArea">
-    <div class="bill-header">
-     
-      <h2>Multilink Digital Studio</h2>
-      <p>Thaiba, Godavari-14</p>
-      <p>Phone: 9841452730 </p>
-    </div>
-
-    <h3>Service Invoice</h3>
-    <p id="invoiceNumber"></p>
-    <p id="billDate"></p>
-    <p id="billCustomer"></p>
-
-    <table id="billTable">
-      <tr>
-        <th>Photo Number</th>
-        <th>Service</th>
-        <th>Price</th>
-        <th>Action</th>
-      </tr>
-    </table>
-
-    <p class="total" id="total"></p>
-  </div>
-
-  <!-- Dashboard for old invoices -->
-  <div id="invoiceDashboard" class="dashboard"></div>
- 
+<label>Date</label>
+<input id="billDate" disabled>
 
 </div>
 
+
+<h3>Add Item</h3>
+
+<div class="itemInput">
+
+<input id="particular" list="services" placeholder="Particular">
+<datalist id="services"></datalist>
+
+<input id="qty" type="number" placeholder="Qty">
+
+<input id="rate" type="number" placeholder="Rate">
+
+<button onclick="addItem()">Add</button>
+
+</div>
+
+
+<table id="billTable">
+
+<tr>
+<th>S.N</th>
+<th>Particular</th>
+<th>Qty</th>
+<th>Rate</th>
+<th>Amount</th>
+<th>Action</th>
+</tr>
+
+</table>
+
+
+<div class="summary">
+
+<p>
+Discount Rs 
+<input id="discount" value="0" type="number" oninput="renderTable()">
+</p>
+
+<p class="totalBox">
+Total Rs <span id="total">0</span>
+</p>
+
+<p>
+Advance Rs 
+<input id="advance" value="0" type="number" oninput="renderTable()">
+</p>
+
+<p class="balanceBox">
+Balance Rs <span id="balance">0</span>
+</p>
+
+</div>
+
+
+<div class="buttons">
+
+<button onclick="generateBill()">Generate Bill</button>
+
+<button onclick="window.print()">Print</button>
+<button onclick="downloadPDF()">Download PDF</button>
+<button onclick="newBill()">New Bill</button>
+<button onclick="shareBill()">Share</button>
+
+</div>
+
+
+<hr>
+
+
+<h3>Invoice Search</h3>
+
+<input id="searchInput" placeholder="Invoice Number">
+
+<button onclick="searchInvoice()">Search</button>
+
+<button onclick="viewAllInvoices()">View All</button>
+
+
+
+
+<div id="invoiceList"></div>
+
+</div>
+
+
+<div id="billDisplay" class="billDisplay"></div>
+
+
 <script src="script.js"></script>
+
 </body>
 </html>
