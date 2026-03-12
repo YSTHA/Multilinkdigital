@@ -1,144 +1,100 @@
-body {
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
-  padding: 20px;
-  margin: 0;
+body{
+font-family:Arial;
+background:#f4f4f4;
+padding:20px;
 }
 
-.container {
-  max-width: 750px;
-  margin: auto;
-  background: #fff;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+.container{
+max-width:900px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:10px;
 }
 
-h1, h2, h3 {
-  color: #3f51b5;
-  text-align: center;
-  margin: 5px 0 15px 0;
+h1{
+text-align:center;
 }
 
-.section {
-  margin-bottom: 20px;
+input,select{
+padding:8px;
+margin:5px;
 }
 
-input {
-  padding: 10px;
-  margin: 5px 0 15px 0;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-  width: 100%;
+button{
+padding:8px 12px;
+margin:5px;
+cursor:pointer;
 }
 
-.form-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
 }
 
-.form-row input {
-  flex: 1;
+th,td{
+border:1px solid #ccc;
+padding:8px;
+text-align:center;
 }
 
-button {
-  padding: 10px 15px;
-  margin: 5px 5px 0 0;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  background: #3f51b5;
-  color: white;
-  font-weight: 600;
-  transition: 0.3s;
+.summary{
+margin-top:15px;
 }
 
-button:hover {
-  background: #303f9f;
+.totalBox{
+font-size:20px;
+font-weight:bold;
+background:#e8f5e9;
+color:#1b5e20;
+padding:10px;
 }
 
-.message {
-  color: green;
-  font-weight: 600;
-  margin-bottom: 10px;
+.balanceBox{
+font-size:20px;
+font-weight:bold;
+background:#ffebee;
+color:#b71c1c;
+padding:10px;
 }
 
-.bill {
-  margin-top: 30px;
-  padding: 20px;
-  border-radius: 12px;
-  background: #fefefe;
-  border: 1px solid #ddd;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+.billDisplay{
+margin-top:30px;
+border:2px solid #000;
+padding:20px;
+background:white;
 }
 
-.bill-header {
-  text-align: center;
-  margin-bottom: 15px;
+.shopHeader{
+text-align:center;
+margin-bottom:15px;
 }
 
-.bill-header .logo {
-  width: 100px;
-  margin-bottom: 5px;
+.shopHeader h2{
+margin:0;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
+.shopHeader p{
+margin:2px;
+font-size:14px;
 }
 
-th {
-  background: #f2f2f2;
-  font-weight: 600;
-  padding: 10px;
-  text-align: left;
+@media print{
+
+body *{
+visibility:hidden;
 }
 
-td {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
+.billDisplay, .billDisplay *{
+visibility:visible;
 }
 
-.total {
-  font-size: 1.2em;
-  font-weight: 700;
-  margin-top: 15px;
-  text-align: right;
+.billDisplay{
+position:absolute;
+top:0;
+left:0;
+width:100%;
 }
 
-.dashboard table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
-}
-
-.dashboard th, .dashboard td {
-  padding: 8px;
-  border: 1px solid #ddd;
-  text-align: left;
-}
-
-.dashboard button {
-  background: #f44336;
-  margin-left: 5px;
-}
-
-@media print {
-  body * { visibility: hidden; }
-  #billArea, #billArea * { visibility: visible; }
-  #billArea { position: absolute; top: 0; left: 0; width: 100%; }
-}
-
-
-/* Collapsible Dashboard */
-.dashboard {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.5s ease;
-  margin-top: 20px;
-  border-top: 1px solid #ddd;
-  padding: 0 10px;
 }
